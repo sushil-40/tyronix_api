@@ -1,6 +1,7 @@
 import express from "express";
 import { getUserByEmail, insertUser } from "../models/user/UserModel.js";
 import { comparePassword, hashPassword } from "../utils/bcryptjs.js";
+import { signJWT } from "../utils/jwt.js";
 
 const router = express.Router();
 
@@ -61,11 +62,16 @@ router.post("/login", async (req, res, next) => {
           // the user actually authenticated
 
           //4. JWT and store the jwt in db then return the uer {} with jwt token
+
+          const accessJWT = signJWT({ email });
+
           user.password = undefined; // ****** ****** because even in success we do not want to return password even in encryped form"
+
           res.json({
             status: "success",
             message: "Logged in successfully",
             user,
+            accessJWT,
           });
           return;
         }
